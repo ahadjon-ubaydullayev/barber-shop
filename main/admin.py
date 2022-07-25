@@ -1,0 +1,28 @@
+from django.contrib import admin
+from main.models import *
+
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ['user_id', 'full_name', 'tel_number', 'work_experience']
+
+
+@admin.register(BotUser)
+class BotUserAdmin(admin.ModelAdmin):
+    list_display = ['user_id', 'first_name', 'tel_number', 'permission']
+
+
+
+@admin.register(ServiceCosts)
+class ServiceCostsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'cost']
+
+
+@admin.register(Styles)
+class StylesAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ['user_id', 'first_name', 'tel_number', 'permission']
