@@ -12,7 +12,6 @@ class BotUserAdmin(admin.ModelAdmin):
     list_display = ['user_id', 'first_name', 'tel_number', 'permission']
 
 
-
 @admin.register(ServiceCosts)
 class ServiceCostsAdmin(admin.ModelAdmin):
     list_display = ['name', 'cost']
@@ -25,4 +24,18 @@ class StylesAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['user_id', 'first_name', 'tel_number', 'permission']
+    list_display = ['bot_user', 'employee', 'active']
+
+
+@admin.register(Order)
+class StylesAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(WorkSchedule)
+class StylesAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(MessageStep)
+class MessageStepAdmin(admin.ModelAdmin):
+    pass

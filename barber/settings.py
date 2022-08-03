@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-
+import requests
+from main import token
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-57s09cfd6_$wpa2owu@nl0hi91e9s)ey9-78rw70o-r$kf&%!i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['d2a0-94-158-62-120.ngrok.io', '127.0.0.1']
+ALLOWED_HOSTS = ['665f-94-158-62-120.ngrok.io', '127.0.0.1']
 
 
 # Application definition
@@ -124,3 +125,9 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# allow webhook
+
+WEBHOOK = requests.get(url=f'https://api.telegram.org/bot{token.token}/setWebhook?url=https://{ALLOWED_HOSTS[0]}/api/')
+print(WEBHOOK)
+

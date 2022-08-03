@@ -1,9 +1,9 @@
 from django.urls import path
-from main.views import index
-
+from main import views
+from main import bot_user
 
 urlpatterns = [
-    path('api/', index, name='handler'),
+    path('api/', views.index, name='handler'),
   
    
 ]
