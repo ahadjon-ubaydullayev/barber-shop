@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-57s09cfd6_$wpa2owu@nl0hi91e9s)ey9-78rw70o-r$kf&%!i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['oltin-qaychi.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['665f-94-158-62-120.ngrok.io', 'oltin-qaychi.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -123,11 +123,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
     ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
