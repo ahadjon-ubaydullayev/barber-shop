@@ -122,13 +122,13 @@ def register_view(message):
                 text += f'🟢 | {i.bot_user.first_name} | {i.bot_user.tel_number}\n-------------------\n'
             bot.send_message(message.from_user.id, text)
         else:
-            bot.send_message(message.from_user.id, "Sizda Hozircha kunlik mijozlarimiz yuq!")
+            bot.send_message(message.from_user.id, "Sizda Hozircha kunlik mijozlarimiz yo'q!")
 
     elif admin.permission == "employee" and message.text == "Ish vaqti⏰": # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
-        bot.send_message(message.from_user.id, "kunlik ish vaqtlarini kiritishingiz mumkin")
+        bot.send_message(message.from_user.id, "Kunlik ish vaqtlarini kiritishingiz mumkin")
 
     elif admin.permission == "employee" and message.text == "Reyting📈": # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
-        bot.send_message(message.from_user.id, "Har 10 kunlik Xisobga olinadi")
+        bot.send_message(message.from_user.id, "Har 10 kunlik reyting xisobga olinadi")
 
     elif admin.permission == "admin" and message.text == "E'lon jo'natish🗣": # commands from the admin
         message_step.step = 1
