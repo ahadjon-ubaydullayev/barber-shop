@@ -9,7 +9,7 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 @admin.register(BotUser)
 class BotUserAdmin(admin.ModelAdmin):
-    list_display = ['user_id', 'first_name', 'tel_number', 'permission']
+    list_display = ['user_id', 'first_name', 'tel_number', 'permission', 'cr_on']
 
 
 @admin.register(ServiceCosts)
