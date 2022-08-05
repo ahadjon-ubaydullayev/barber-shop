@@ -33,6 +33,7 @@ def start(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['contact'])
 def register_view(message):
+    print(message.text)
     text = AllText(first_name=message.from_user.first_name)
     main_markup = button_gen("Joy buyurtma qilish✏️", "Info📕", "Buyurtmalarim🛎")
     main_markup_employee = button_gen("Kunlik Mijozlar👨🏻‍⚖️", "Ish vaqti⏰", "Reyting📈")
@@ -68,13 +69,17 @@ def register_view(message):
     employee = Employee.objects.all()
     message_step = MessageStep.objects.all().first()
     main_markup_admin = button_gen("Yangi xodim qo'shish👨‍💼", "E'lon jo'natish🗣", "Xodimni o'chirish🙅‍♂️", "Statistika📈")
-    new_employee = Employee.objects.filter(is_created=True).first()
-    
+    new_employee = Employee.objects.filter(is_created=True).first() 
     if message.text == "Joy buyurtma qilish✏️":
         xodimlar_markup = types.InlineKeyboardMarkup(row_width=2)
         for i in employee:
             xodimlar_markup.add(types.InlineKeyboardButton(f"{i.full_name}", callback_data=f"{i.user_id}"))
         bot.send_message(message.from_user.id, "O`zingizga yoqqan sartaroshni tanlang:", reply_markup=xodimlar_markup)
+
+    elif message.text == "Orqaga↩️":
+        message_step.step = 0
+        message_step.save()
+        bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
     
     elif message.text == "Info📕":
         bot.send_message(message.from_user.id, "Kerakli bo'limni tanlang:", reply_markup=info_markup)
@@ -98,7 +103,6 @@ def register_view(message):
 
     elif admin.permission == "user" and message.text == "Buyurtmalarim📝": # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
         order = Order.objects.filter(date=date.today().strftime("%Y-%m-%d"), bot_user__user_id=message.from_user.id)
-        print(order.exists())
         if order.exists():
             markup = types.InlineKeyboardMarkup(row_width=2)
             btn = types.InlineKeyboardButton('❌ o`chirish', callback_data=f'del_or_time_{order.get().id}')
@@ -137,6 +141,8 @@ def register_view(message):
         bot.send_message(message.from_user.id, "Xabarni jo'nating:", reply_markup=ann_markup)
 
     elif message.text == "Orqaga↩️":
+        message_step.step = 0
+        message_step.save()
         bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
     
     elif message_step.step == 1:
