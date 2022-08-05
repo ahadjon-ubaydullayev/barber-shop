@@ -132,8 +132,12 @@ def register_view(message):
 
     elif admin.permission == "admin" and message.text == "E'lon jo'natish🗣": # commands from the admin
         message_step.step = 1
+        ann_markup = button_gen("Orqaga↩️")
         message_step.save()
-        bot.send_message(message.from_user.id, "Xabarni jo'nating:")
+        bot.send_message(message.from_user.id, "Xabarni jo'nating:", reply_markup=ann_markup)
+
+    elif message.text == "Orqaga↩️":
+        bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
     
     elif message_step.step == 1:
         message_text = message.text # receive the message from the admin
