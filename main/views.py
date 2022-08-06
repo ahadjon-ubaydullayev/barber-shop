@@ -33,7 +33,6 @@ def start(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['contact'])
 def register_view(message):
-    print(message.text)
     text = AllText(first_name=message.from_user.first_name)
     main_markup = button_gen("Joy buyurtma qilish✏️", "Info📕", "Buyurtmalarim🛎")
     main_markup_employee = button_gen("Kunlik Mijozlar👨🏻‍⚖️", "Ish vaqti⏰", "Reyting📈")
@@ -56,6 +55,13 @@ def register_view(message):
             permission='user',
         )
         bot_user.save()
+        if Employee.objects.filter(tel_number=message.contact.phone_number).exists():
+            employee = Employee.objects.get(tel_number=message.contact.phone_number)
+            employee.user_id = message.from_user.id
+            employee.active = True
+            employee.save()
+            bot_user.permission = 'employee'
+            bot_user.save()  
         bot.send_message(message.from_user.id, "Kerakli bo'limni tanlang👇", reply_markup=main_markup)
         
 
