@@ -42,13 +42,13 @@ def register_view(message):
             permission='user',
         )
         bot_user.save()
-        if Employee.objects.filter(tel_number=message.contact.phone_number).exists():
-            employee = Employee.objects.get(tel_number=message.contact.phone_number)
-            employee.user_id = message.from_user.id
-            employee.active = True
-            employee.save()
-            bot_user.permission = 'employee'
-            bot_user.save()
+    if Employee.objects.filter(tel_number=message.contact.phone_number).exists():
+        employee = Employee.objects.get(tel_number=message.contact.phone_number)
+        employee.user_id = message.from_user.id
+        employee.active = True
+        employee.save()
+        bot_user.permission = 'employee'
+        bot_user.save()
     bot.send_message(message.from_user.id, f"Hurmatli {message.from_user.first_name} Tilni tanlang👇", reply_markup=markup)
 
 
