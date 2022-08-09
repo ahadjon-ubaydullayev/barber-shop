@@ -11,11 +11,11 @@ class AllText:
         if lang == 'uz':
             text = f'Assalom alaykum {self.first_name} !\n' \
                    f'Botimizga xush kelibsiz!\n' \
-                   f'Botdan foydalanish uchun tilni tanlang!'
+                   f'Botdan foydalanishni boshlash uchun quyidagi tugmani bosing:'
         elif lang == 'ru':
             text = f'Привет {self.first_name}\n' \
                    f'Добро пожаловать в наш бот\n' \
-                   f'Выберите язык!'
+                   f'Нажмите на кнопку ниже, чтобы начать использовать бота:'
         return text
 
     def step2(self, lang='uz'):

@@ -49,14 +49,6 @@ def register_view(message):
             employee.save()
             bot_user.permission = 'employee'
             bot_user.save()
-    # else:
-    #     admin = BotUser.objects.get(user_id=message.from_user.id)
-    #     if admin.permission == "admin":
-    #         bot.send_message(message.from_user.id, "Hurmatli Admin muloqot tilini tanlang👇:", reply_markup=main_markup_admin)
-    #     elif admin.permission == "employee":
-    #         bot.send_message(message.from_user.id, "Hurmatli Xodim muloqot tilini tanlang👇:", reply_markup=main_markup_employee)
-    #     else:
-    #         bot.send_message(message.from_user.id, text.step2(), reply_markup=main_markup)
     bot.send_message(message.from_user.id, f"Hurmatli {message.from_user.first_name} Tilni tanlang👇", reply_markup=markup)
 
 
@@ -215,7 +207,6 @@ def register_view(message):
         message_step.step = 0
         message_step.save()
         bot.send_message(message.from_user.id, "Xabar jo'natildi!", reply_markup=main_markup_admin)
-        # how to stop sending messages to the users who blocked or deleted the bot?
     
     elif message.text == "Orqaga⬅️":
         new_employee.step -= 1
@@ -308,7 +299,7 @@ def handle_query(call): #'10:30'
     bot_user = BotUser.objects.get(user_id=call.from_user.id)
     if call.data == 'dislike':
         if bot_user.language == 'uz':
-            bot.answer_callback_query(callback_query_id=call.id, text='Kechirasiz Band qilingan!')
+            bot.answer_callback_query(callback_query_id=call.id, text='Kechirasiz bu vaqt band qilingan!')
         else:
             bot.answer_callback_query(callback_query_id=call.id, text='Извините, занят!')
     elif 'del_or_time' in call.data:
@@ -334,7 +325,7 @@ def handle_query(call): #'10:30'
         order = Order.objects.get(id=int(or_id))
         order.delete()
         if bot_user.language == 'uz':
-            bot.send_message(order.bot_user.user_id, text=f"Iltimos boshqatdan harkat qilib korin 🙂")
+            bot.send_message(order.bot_user.user_id, text=f"Iltimos qaytadan urinib ko'ring 🙂")
         else:
             bot.send_message(order.bot_user.user_id, text=f"Пожалуйста, попробуйте еще раз 🙂")
         bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text=f"Buyurtmangiz bekor qilindi!")
@@ -351,9 +342,9 @@ def handle_query(call): #'10:30'
         orders = Order.objects.filter(date=date.today().strftime("%Y-%m-%d"), bot_user__user_id=call.from_user.id)
         if orders.exists():
             if bot_user.language == 'uz':
-                bot.answer_callback_query(callback_query_id=call.id, text='Kechirasiz bitta buyurtma bor!')
+                bot.answer_callback_query(callback_query_id=call.id, text='Kechirasiz, sizda allaqachon buyurtma bor!')
             else:
-                bot.answer_callback_query(callback_query_id=call.id, text='Извините, у меня есть один заказ!')
+                bot.answer_callback_query(callback_query_id=call.id, text='Извините, у вас уже есть заказ')
         else:
             order = Order.objects.create(
                 bot_user=user,
@@ -365,11 +356,11 @@ def handle_query(call): #'10:30'
             btn = types.InlineKeyboardButton('✅ qabul qilish', callback_data=f'accept_{order.id}')
             btn1 = types.InlineKeyboardButton('❌ rad etish', callback_data='rejected')
             markup.add(btn, btn1)
-            bot.send_message(employee_id, f"Sizga ⌚️{order.order_time} ga mijoz murojat qildi", reply_markup=markup)
+            bot.send_message(employee_id, f"Sizga ⌚️{order.order_time} ga mijoz murojaat qildi", reply_markup=markup)
             if bot_user.language == 'uz':
-                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Buyurtmangiz qabul qilindi")
+                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Buyurtmangiz qabul qilindi✅")
             else:
-                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Ваш заказ принят")
+                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Ваш заказ принят✅")
 
     elif '_time_emp_' in call.data or Employee.objects.filter(user_id=call.data).exists():
         if '_time_emp_' in call.data:
@@ -407,8 +398,12 @@ def handle_query(call): #'10:30'
                                 types.InlineKeyboardButton(btn1, callback_data=btn_back1),
                                 types.InlineKeyboardButton(btn2, callback_data=btn_back2))
                 n += 3
-            bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
-                                  text=f"{employee.full_name}ni kun tartibi", reply_markup=time_markup)
+            if bot_user.language == 'uz':
+                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
+                                      text=f"{employee.full_name}ni kun tartibi", reply_markup=time_markup)
+            else:
+                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
+                                      text=f"{employee.full_name}повестка дня", reply_markup=time_markup)
         else:
             if bot_user.language == 'uz':
                 bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Bizda ish vaqti 09:00 dan 21:00 gacha")
