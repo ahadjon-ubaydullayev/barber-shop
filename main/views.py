@@ -42,8 +42,11 @@ def register_view(message):
             permission='user',
         )
         bot_user.save()
-        if Employee.objects.filter(tel_number=message.contact.phone_number).exists():
-            employee = Employee.objects.get(tel_number=message.contact.phone_number)
+        tel_number = message.contact.phone_number
+        if '+' in tel_number:
+            tel_number = message.contact.phone_number[1:]
+        if Employee.objects.filter(tel_number=tel_number).exists():
+            employee = Employee.objects.get(tel_number=tel_number)
             employee.user_id = message.from_user.id
             employee.active = True
             employee.save()
@@ -72,27 +75,27 @@ def register_view(message):
         admin.language = 'uz'
         admin.save()
         if admin.permission == 'employee':
-            bot.send_message(message.from_user.id, "Hurmatli Hodim siz uchun yaratilgan \nqulayliklardan foydalanishingiz mumkin👇:", reply_markup=main_markup_employee)
+            bot.send_message(message.from_user.id, "Hurmatli Xodim,\n siz uchun yaratilgan \nqulayliklardan foydalanishingiz mumkin👇:", reply_markup=main_markup_employee)
         elif admin.permission == 'admin':
-            bot.send_message(message.from_user.id, "Hurmatli Admin siz uchun yaratilgan \nqulayliklardan foydalanishingiz mumkin👇:", reply_markup=main_markup_admin)
+            bot.send_message(message.from_user.id, "Hurmatli Admin,\n siz uchun yaratilgan \nqulayliklardan foydalanishingiz mumkin👇:", reply_markup=main_markup_admin)
         else:
-            bot.send_message(message.from_user.id, f"Hurmatli {message.from_user.first_name} siz uchun yaratilgan \nqulayliklardan foydalanishingiz mumkin👇:", reply_markup=main_markup_user)
+            bot.send_message(message.from_user.id, f"Hurmatli {message.from_user.first_name}\n siz uchun yaratilgan \nqulayliklardan foydalanishingiz mumkin👇:", reply_markup=main_markup_user)
     if message.text == "🇷🇺Rus tili🇷🇺":
         admin.language = 'ru'
         admin.save()
         if admin.permission == 'employee':
-            bot.send_message(message.from_user.id, "Уважаемый сотрудник, вы можете \nпользоваться созданными для вас удобствами.👇:", reply_markup=main_markup_employee_ru)
+            bot.send_message(message.from_user.id, "Уважаемый сотрудник,\n вы можете \nпользоваться созданными для вас удобствами.👇:", reply_markup=main_markup_employee_ru)
         elif admin.permission == 'admin':
-            bot.send_message(message.from_user.id, "Уважаемый админ, вы можете \nпользоваться созданными для вас объектами👇:", reply_markup=main_markup_admin_ru)
+            bot.send_message(message.from_user.id, "Уважаемый админ,\n вы можете \nпользоваться созданными для вас объектами👇:", reply_markup=main_markup_admin_ru)
         else:
-            bot.send_message(message.from_user.id, f"Уважаемый {message.from_user.first_name}, вы можете \nпользоваться удобствами, созданными для вас.👇:", reply_markup=main_markup_user_ru)
+            bot.send_message(message.from_user.id, f"Уважаемый {message.from_user.first_name},\n вы можете \nпользоваться удобствами, созданными для вас.👇:", reply_markup=main_markup_user_ru)
 
     elif message.text == "Joy buyurtma qilish✏️" or message.text == "Сделать заказ✏️":
         xodimlar_markup = types.InlineKeyboardMarkup(row_width=2)
         for i in employee:
             xodimlar_markup.add(types.InlineKeyboardButton(f"{i.full_name}", callback_data=f"{i.user_id}"))
         if admin.language == 'uz':
-            bot.send_message(message.from_user.id, "O`zingizga yoqqan sartaroshni tanlang:", reply_markup=xodimlar_markup)
+            bot.send_message(message.from_user.id, "O`zingizga maqul kelgan sartaroshni tanlang va buyurtma bering:", reply_markup=xodimlar_markup)
         else:
             bot.send_message(message.from_user.id, "Выберите парикмахера, который вам нравится:", reply_markup=xodimlar_markup)
 
@@ -168,9 +171,9 @@ def register_view(message):
                 bot.send_message(message.from_user.id, text, reply_markup=markup)
         else:
             if admin.language == 'uz':
-                bot.send_message(message.from_user.id, "Sizda Hozircha kunlik buyurtmangiz yuq!")
+                bot.send_message(message.from_user.id, "Sizda hozircha kunlik buyurtma mavjud emas 🤷🏻‍♂️")
             else:
-                bot.send_message(message.from_user.id, "У вас есть ежедневный заказ!")
+                bot.send_message(message.from_user.id, "У вас есть ежедневный заказ 🤷🏻‍♂️")
 
     elif admin.permission == "employee" and message.text == "Kunlik Mijozlar👨🏻‍⚖️": # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
         order = Order.objects.filter(date=date.today().strftime("%Y-%m-%d"), employee__user_id=message.from_user.id)
@@ -181,10 +184,10 @@ def register_view(message):
                 text += f'🟢 | {i.bot_user.first_name} | {i.bot_user.tel_number}\n-------------------\n'
             bot.send_message(message.from_user.id, text)
         else:
-            bot.send_message(message.from_user.id, "Sizda Hozircha kunlik mijozlarimiz yo'q!")
+            bot.send_message(message.from_user.id, "Sizda hozircha kunlik mijoz mavjud emas yo'q 🤷🏻‍♂️")
 
     elif admin.permission == "employee" and message.text == "Ish vaqti⏰": # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
-        bot.send_message(message.from_user.id, "Kunlik ish vaqtlarini kiritishingiz mumkin")
+        bot.send_message(message.from_user.id, "Kunlik ish vaqtlarini kiritishingiz mumkin ⏰:")
 
     elif admin.permission == "employee" and message.text == "Reyting📈": # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
         bot.send_message(message.from_user.id, "Har 10 kunlik reyting xisobga olinadi")
@@ -193,42 +196,42 @@ def register_view(message):
         message_step.step = 1
         ann_markup = button_gen("Orqaga↩️")
         message_step.save()
-        bot.send_message(message.from_user.id, "Xabarni jo'nating:", reply_markup=ann_markup)
+        bot.send_message(message.from_user.id, "Mijozlarga yuborilishi kerak bo'lgan xabarni jo'nating 📃:", reply_markup=ann_markup)
 
-    elif message.text == "Orqaga↩️":
+    elif admin.permission == "admin" and message.text == "Orqaga↩️":
         message_step.step = 0
         message_step.save()
         bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
     
-    elif message_step.step == 1:
+    elif admin.permission == "admin" and message_step.step == 1:
         message_text = message.text # receive the message from the admin
         for user in users:
             bot.send_message(user.user_id, message_text) # send the message to each user
         message_step.step = 0
         message_step.save()
-        bot.send_message(message.from_user.id, "Xabar jo'natildi!", reply_markup=main_markup_admin)
+        bot.send_message(message.from_user.id, "Xabar mijozlarga muvaffaqiyatli jo'natildi ✅", reply_markup=main_markup_admin)
     
-    elif message.text == "Orqaga⬅️":
+    elif admin.permission == "admin" and message.text == "Orqaga⬅️":
         new_employee.step -= 1
         new_employee.save()
         cancel_func(message)
 
-    elif message.text == "Bekor qilish❌":
+    elif admin.permission == "admin" and message.text == "Bekor qilish❌":
         new_employee.delete()
         bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
 
-    elif message.text == "Xodimni o'chirish🙅‍♂️":
+    elif admin.permission == "admin" and message.text == "Xodimni o'chirish🙅‍♂️":
         xodimlar_markup = types.InlineKeyboardMarkup(row_width=2)
         for i in employee:
             xodimlar_markup.add(types.InlineKeyboardButton(f"{i.full_name}", callback_data=f"{i.user_id} delete"))
         bot.send_message(message.from_user.id, "O'chirilishi kerak bo'lgan xodimni tanlang:", reply_markup=xodimlar_markup)
     
-    elif message.text == "Statistika📈":
+    elif admin.permission == "admin" and message.text == "Statistika📈":
         orders = Order.objects.all().count()
         users = len(BotUser.objects.filter(permission="user"))
         bot.send_message(message.from_user.id, f"Barcha mijozlar soni {users} ta.\nBarcha buyurtmalar soni {orders} ta.")
 
-    elif message.text == "Yangi xodim qo'shish👨‍💼": # adding employee
+    elif admin.permission == "admin" and message.text == "Yangi xodim qo'shish👨‍💼": # adding employee
         form_markup = button_gen("Bekor qilish❌")
         new_employee = Employee.objects.create(
         step=1,
@@ -236,43 +239,43 @@ def register_view(message):
         is_created=True
         )
         new_employee.save()
-        bot.send_message(message.from_user.id, "Ishchining ism familiyasini kiriting:", reply_markup=form_markup)
+        bot.send_message(message.from_user.id, "Xodimning ism familiyasini kiriting 🤵:", reply_markup=form_markup)
 
-    elif new_employee.step == 1:
+    elif admin.permission == "admin" and new_employee.step == 1:
         new_employee.full_name = message.text
         new_employee.step += 1
         new_employee.save()
-        bot.send_message(message.from_user.id, "Ishchining telegram id raqamini kiriting:", reply_markup=form_main_markup)
+        bot.send_message(message.from_user.id, "Xodimning telefon raqamini 998xxxxxxxxx ko'rinishida kiriting 📱:", reply_markup=form_main_markup)
     
-    elif new_employee.step == 2:
-        if str(message.text).isdigit():
-            new_employee.user_id = message.text
-            new_employee.step += 1
-            new_employee.save()
-            bot.send_message(message.from_user.id, "Ishchining telefon raqamini kiriting:")
-        else:
-            bot.send_message(message.from_user.id,
-                             'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining telegram id raqamini kiriting:')
-    elif new_employee.step == 3:
+    # elif admin.permission == "admin" and new_employee.step == 2:
+    #     if str(message.text).isdigit():
+    #         new_employee.user_id = message.text
+    #         new_employee.step += 1
+    #         new_employee.save()
+    #         bot.send_message(message.from_user.id, "Ishchining telefon raqamini 998xxxxxxxxx ko'rinishida kiriting:")
+    #     else:
+    #         bot.send_message(message.from_user.id,
+    #                          'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining telegram id raqamini kiriting:')
+    elif admin.permission == "admin" and new_employee.step == 2:
         if str(message.text).isdigit():
             new_employee.tel_number = message.text
             new_employee.step += 1
             new_employee.save()
-            bot.send_message(message.from_user.id, "Ishchining ish tajriba muddatini kiriting:")
+            bot.send_message(message.from_user.id, "Xodimning ish tajriba muddatini kiriting 🤵:")
         else:
             bot.send_message(message.from_user.id,
-                             'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining telefon raqamini kiriting:')
+                             "Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nXodimning telefon raqamini 998xxxxxxxxx ko'rinishida kiriting 📱:")
 
-    elif new_employee.step == 4:
+    elif admin.permission == "admin" and new_employee.step == 3:
         if str(message.text).isdigit():
             new_employee.work_experience = message.text
             new_employee.step = 0
             new_employee.is_created = False
             new_employee.save()
-            bot.send_message(message.from_user.id, "Muvaffaqiyatli qo'shildi!", reply_markup=main_markup_admin)
+            bot.send_message(message.from_user.id, "Muvaffaqiyatli qo'shildi ✅ ", reply_markup=main_markup_admin)
         else:
             bot.send_message(message.from_user.id,
-                                 'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining ish tajriba muddatini kiriting:')
+                                 'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining ish tajriba muddatini kiriting 🤵:')
     
 
 class TimeReception:
@@ -373,11 +376,11 @@ def handle_query(call): #'10:30'
         time_markup = types.InlineKeyboardMarkup(row_width=3)
         n = 0
         time_r = TimeReception()
-        start = 9
+        start = 8
         end = 21
-        if time_r.now_hour() > 9:
+        if time_r.now_hour() > 8:
             start = time_r.now_hour()
-        if 8 < time_r.now_hour() < 22:
+        if 7 < time_r.now_hour() < 22:
             for xodim in range(((end - start) // 3) * 2 + 1):
                 btn = f"{time_r.time_r(n + 0)}"
                 btn_back = f"time_{time_r.time_r(n + 0)}_userid_{call.data}"
@@ -400,26 +403,26 @@ def handle_query(call): #'10:30'
                 n += 3
             if bot_user.language == 'uz':
                 bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
-                                      text=f"{employee.full_name}ni kun tartibi", reply_markup=time_markup)
+                                      text=f"{employee.full_name} ni kun tartibi", reply_markup=time_markup)
             else:
                 bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
-                                      text=f"{employee.full_name}повестка дня", reply_markup=time_markup)
+                                      text=f"{employee.full_name} повестка дня", reply_markup=time_markup)
         else:
             if bot_user.language == 'uz':
-                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Bizda ish vaqti 09:00 dan 21:00 gacha")
+                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Bizda ish vaqti 08:00 dan 21:00 gacha.")
             else:
-                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Наше рабочее время с 09:00 до 21:00")
+                bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id, text="Наше рабочее время с 08:00 до 21:00.")
 
 
 def cancel_func(message):
     new_employee = Employee.objects.filter(is_created=True).first()
     form_markup = button_gen("Orqaga", "Bekor qilish")    
     if new_employee.step == 1: 
-        bot.send_message(message.from_user.id, 'Ishchining ism familiyasini kiriting:', reply_markup=form_markup)
-    elif new_employee.step == 2:
-        bot.send_message(message.from_user.id, 'Ishchining telegram id raqamini kiriting:')  
-    elif new_employee.step == 3: 
-        bot.send_message(message.from_user.id, 'Ishchining telefon raqamini kiriting:')   
-    elif new_employee.step == 4:
-        bot.send_message(message.from_user.id, 'Ishchining ish tajriba muddatini kiriting:')
+        bot.send_message(message.from_user.id, 'Xodimning ism familiyasini kiriting 🤵:', reply_markup=form_markup)
+    # elif new_employee.step == 2:
+    #     bot.send_message(message.from_user.id, 'Ishchining telegram id raqamini kiriting:')  
+    elif new_employee.step == 2: 
+        bot.send_message(message.from_user.id, 'Xodimning telefon raqamini 998xxxxxxxxx kiriting 📱:')   
+    elif new_employee.step == 3:
+        bot.send_message(message.from_user.id, 'Xodimning ish tajriba muddatini kiriting 🤵:')
        
