@@ -47,7 +47,7 @@ def register_view(message):
             tel_number = message.contact.phone_number[1:]
         if Employee.objects.filter(tel_number=tel_number).exists():
             employee = Employee.objects.get(tel_number=tel_number)
-            employee.user_id = message.from_user.id
+            employee.user_id = int(message.from_user.id)
             employee.active = True
             employee.save()
             bot_user.permission = 'employee'
@@ -247,15 +247,6 @@ def register_view(message):
         new_employee.save()
         bot.send_message(message.from_user.id, "Xodimning telefon raqamini 998xxxxxxxxx ko'rinishida kiriting 📱:", reply_markup=form_main_markup)
     
-    # elif admin.permission == "admin" and new_employee.step == 2:
-    #     if str(message.text).isdigit():
-    #         new_employee.user_id = message.text
-    #         new_employee.step += 1
-    #         new_employee.save()
-    #         bot.send_message(message.from_user.id, "Ishchining telefon raqamini 998xxxxxxxxx ko'rinishida kiriting:")
-    #     else:
-    #         bot.send_message(message.from_user.id,
-    #                          'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining telegram id raqamini kiriting:')
     elif admin.permission == "admin" and new_employee.step == 2:
         if str(message.text).isdigit():
             new_employee.tel_number = message.text
@@ -276,7 +267,7 @@ def register_view(message):
         else:
             bot.send_message(message.from_user.id,
                                  'Iltimos to\'g\'ri ma\'lumot kiriting🙅‍♂️\nIshchining ish tajriba muddatini kiriting 🤵:')
-    
+
 
 class TimeReception:
     def __init__(self):
@@ -418,9 +409,7 @@ def cancel_func(message):
     new_employee = Employee.objects.filter(is_created=True).first()
     form_markup = button_gen("Orqaga", "Bekor qilish")    
     if new_employee.step == 1: 
-        bot.send_message(message.from_user.id, 'Xodimning ism familiyasini kiriting 🤵:', reply_markup=form_markup)
-    # elif new_employee.step == 2:
-    #     bot.send_message(message.from_user.id, 'Ishchining telegram id raqamini kiriting:')  
+        bot.send_message(message.from_user.id, 'Xodimning ism familiyasini kiriting 🤵:', reply_markup=form_markup)  
     elif new_employee.step == 2: 
         bot.send_message(message.from_user.id, 'Xodimning telefon raqamini 998xxxxxxxxx kiriting 📱:')   
     elif new_employee.step == 3:
