@@ -32,10 +32,14 @@ class StylesAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(WorkSchedule)
-class StylesAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(WorkSchedule)
+# class StylesAdmin(admin.ModelAdmin):
+#     pass
 
 @admin.register(MessageStep)
 class MessageStepAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(EmployeeSchedule)
+class EmployeeScheduleAdmin(admin.ModelAdmin):
     pass

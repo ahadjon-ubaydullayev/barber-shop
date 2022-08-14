@@ -24,7 +24,9 @@ class Employee(models.Model):
 	work_experience = models.CharField(max_length=256, blank=True, null=True)
 	is_created = models.BooleanField(default=False)
 
-	
+	def __str__(self):
+		return self.full_name
+
 
 class ServiceCosts(models.Model):
 	name = models.CharField(max_length=255)
@@ -50,14 +52,27 @@ class Customer(models.Model):
 		return self.bot_user.first_name
 
 
-class WorkSchedule(models.Model):
-	employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-	order_time = models.TimeField()
-	status = models.BooleanField(default=False)
-	date = models.DateField(auto_now_add=True)
+# class WorkSchedule(models.Model):
+# 	employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+# 	start = models.CharField(max_length=12)
+# 	end = models.CharField(max_length=12)
+# 	status = models.BooleanField(default=False)
+# 	date = models.DateField(auto_now_add=True)
+# 	step = models.IntegerField(default=0)
 
+# 	def __str__(self):
+# 		return self.start
+
+
+class EmployeeSchedule(models.Model):
+	employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+	start_time = models.CharField(max_length=128, null=True, blank=True)
+	end_time = models.CharField(max_length=128, null=True, blank=True)
+	status = models.BooleanField(default=False)
+	step = models.IntegerField(default=0)
+	
 	def __str__(self):
-		return self.employee.full_name
+		return self.start_time
 
 
 class Order(models.Model):
@@ -70,6 +85,7 @@ class Order(models.Model):
 
 	def __str__(self):
 		return f'{self.employee.user_id}'
+
 
 class MessageStep(models.Model):
 	step = models.IntegerField(default=0)
