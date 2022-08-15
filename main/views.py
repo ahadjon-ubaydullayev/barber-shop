@@ -61,6 +61,7 @@ def register_view(message):
     users = BotUser.objects.all()
     form_main_markup = button_gen("Orqaga⬅️", "Bekor qilish❌")
     admin = BotUser.objects.get(user_id=message.from_user.id)
+    print("per", admin.permission)
     info_markup = button_gen("Narxlar💰", "Stillar💇‍♂️", "Xodimlar ro'yxati🤵‍♂️", "Bosh menu📊")
     info_markup_ru = button_gen("Цены💰", "Стили💇‍♂️", "Список сотрудников 🤵‍♂️", "Главное меню📊")
     employee = Employee.objects.all()
@@ -164,6 +165,9 @@ def register_view(message):
         else:
             bot.send_message(message.from_user.id, "Выберите нужный раздел", reply_markup=main_markup_user_ru)
 
+    elif admin.permission == "employee" and message.text == "Reyting📈":
+        bot.send_message(message.from_user.id, "Har 10 kunlik reyting xisobga olinadi")
+
     elif admin.permission == "user" and message.text == "Buyurtmalarim🛎" or message.text == "Мои заказы🛎":  # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
         order = Order.objects.filter(date=date.today().strftime("%Y-%m-%d"), bot_user__user_id=message.from_user.id)
         if order.exists():
@@ -225,28 +229,31 @@ def register_view(message):
                 step=1,
                 status=True)
             new_schedule.save()
+    
     elif admin.permission == "employee" and new_schedule.step == 1:
-        new_schedule.start_time = message.text
-        new_schedule.step += 1
-        new_schedule.save()
-        bot.send_message(message.from_user.id, "Ishni tugatish vaqtingizni kiriting⏰:")
+        if str(message.text).isdigit():
+            new_schedule.start_time = message.text
+            new_schedule.step += 1
+            new_schedule.save()
+            bot.send_message(message.from_user.id, "Ishni tugatish vaqtingizni kiriting⏰:")
+        else:
+            bot.send_message(message.from_user.id, "Iltimos, vaqtni soat hisobida, raqam holatida kiriting⏰:")
 
     elif admin.permission == "employee" and new_schedule.step == 2:
-        new_schedule.end_time = message.text
-        new_schedule.step = 0
-        new_schedule.status = False
-        new_schedule.save()
-        bot.send_message(message.from_user.id, "Ish vaqti bazaga kiritildi ✅")
-
-    elif admin.permission == "employee" and message.text == "Reyting📈":  # commands from the admin ("Kunlik Mijozlar", "Ish vaqti", "Reyting")
-        bot.send_message(message.from_user.id, "Har 10 kunlik reyting xisobga olinadi")
+        if str(message.text).isdigit():
+            new_schedule.end_time = message.text
+            new_schedule.step = 0
+            new_schedule.status = False
+            new_schedule.save()
+            bot.send_message(message.from_user.id, "Ish vaqti bazaga kiritildi ✅")
+        else:
+            bot.send_message(message.from_user.id, "Iltimos, vaqtni soat hisobida, raqam holatida kiriting⏰:")
 
     elif admin.permission == "admin" and message.text == "E'lon jo'natish🗣":  # commands from the admin
         message_step.step = 1
         ann_markup = button_gen("Orqaga↩️")
         message_step.save()
-        bot.send_message(message.from_user.id, "Mijozlarga yuborilishi kerak bo'lgan xabarni jo'nating 📃:",
-                         reply_markup=ann_markup)
+        bot.send_message(message.from_user.id, "Mijozlarga yuborilishi kerak bo'lgan xabarni jo'nating 📃:", reply_markup=ann_markup)
 
     elif admin.permission == "admin" and message.text == "Orqaga↩️":
         message_step.step = 0
