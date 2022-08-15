@@ -23,9 +23,9 @@ class Employee(models.Model):
 	active = models.BooleanField(default=False)
 	work_experience = models.CharField(max_length=256, blank=True, null=True)
 	is_created = models.BooleanField(default=False)
-
-	def __str__(self):
-		return self.full_name
+	
+	def str(self):
+		return f'user id : {self.user_id}'
 
 
 class ServiceCosts(models.Model):
