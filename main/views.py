@@ -42,6 +42,7 @@ def register_view(message):
             permission='user',
         )
         bot_user.save()
+    else:
         tel_number = message.contact.phone_number
         if '+' in tel_number:
             tel_number = message.contact.phone_number[1:]
@@ -50,6 +51,7 @@ def register_view(message):
             employee.user_id = int(message.from_user.id)
             employee.active = True
             employee.save()
+            bot_user = BotUser.objects.get(tel_number=tel_number)
             bot_user.permission = 'employee'
             bot_user.save()
     bot.send_message(message.from_user.id, f"Hurmatli {message.from_user.first_name} Tilni tanlang👇",
@@ -61,11 +63,11 @@ def register_view(message):
     users = BotUser.objects.all()
     form_main_markup = button_gen("Orqaga⬅️", "Bekor qilish❌")
     admin = BotUser.objects.get(user_id=message.from_user.id)
-    print("per", admin.permission)
     info_markup = button_gen("Narxlar💰", "Stillar💇‍♂️", "Xodimlar ro'yxati🤵‍♂️", "Bosh menu📊")
     info_markup_ru = button_gen("Цены💰", "Стили💇‍♂️", "Список сотрудников 🤵‍♂️", "Главное меню📊")
     employee = Employee.objects.all()
-    if admin.permission == "employee":
+    
+    if admin.permission == "employee":   
         current_employee = Employee.objects.get(user_id=message.from_user.id)
         new_schedule = EmployeeSchedule.objects.filter(employee=current_employee, status=True).first()
     
@@ -391,6 +393,8 @@ def handle_query(call):  # '10:30'
     elif 'delete' in call.data:
         employee_id = str(call.data).split(' ')[0]
         employee = Employee.objects.get(user_id=employee_id)
+        bot_user = BotUser.objects.get(user_id=employee_id)
+        bot_user.delete()
         employee.delete()
         bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
                               text=f"{employee.full_name} bazadan o'chirildi!")
@@ -440,7 +444,12 @@ def handle_query(call):  # '10:30'
         if start < time_r.now_hour() < end:
             if time_r.now_hour() > 8:
                 start = time_r.now_hour()
-            for xodim in range(((end - start) // 3) * 2 + 1):
+            full_time = 0
+            if end - start % 3 == 0:
+                full_time = ((end - start)*2)//3
+            else:
+                full_time = (((end - start)*2)//3) + 1 
+            for xodim in range(full_time):
                 btn = f"{time_r.time_r(n + 0)}"
                 btn_back = f"time_{time_r.time_r(n + 0)}_userid_{call.data}"
                 btn1 = f"{time_r.time_r(n + 1)}"
@@ -456,6 +465,7 @@ def handle_query(call):  # '10:30'
                 if Order.objects.filter(order_time=btn2, date=time_r.day(), employee__user_id=call.data).exists():
                     btn2 = f"🟢 {time_r.time_r(n + 2)}"
                     btn_back2 = f"dislike"
+                # if time_r.time_r(n + 2)
                 time_markup.add(types.InlineKeyboardButton(btn, callback_data=btn_back),
                                 types.InlineKeyboardButton(btn1, callback_data=btn_back1),
                                 types.InlineKeyboardButton(btn2, callback_data=btn_back2))
