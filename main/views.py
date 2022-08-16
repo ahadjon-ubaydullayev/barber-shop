@@ -74,6 +74,8 @@ def register_view(message):
     main_markup_admin_ru = button_gen("Добавить нового сотрудника👨‍💼", "Подать объявление🗣", "Удалить сотрудника🙅‍♂️", "Статистика📈")
     main_markup_employee_ru = button_gen("Ежедневные клиенты👨🏻‍⚖️", "Время работы⏰", "Рейтинг📈")
     new_employee = Employee.objects.filter(is_created=True).first()
+    if len(EmployeeSchedule.objects.filter(status=True)) > 0:
+        new_schedule = EmployeeSchedule.objects.filter(status=True).first()
     if message.text == "🇺🇿O'zbek tili🇺🇿":
         admin.language = 'uz'
         admin.save()
@@ -215,11 +217,13 @@ def register_view(message):
         bot.send_message(message.from_user.id, "Ish boshlash vaqtingizni kiriting ⏰:\n")
         emp = button_gen("❌ Bekor qilish ❌")
         current_employee = Employee.objects.filter(user_id=message.from_user.id).first()
+        print(current_employee)
         if len(EmployeeSchedule.objects.filter(employee=current_employee)) > 0:
             new_schedule = EmployeeSchedule.objects.filter(employee=current_employee).first()
             new_schedule.status = True
             new_schedule.step = 1
             new_schedule.save()
+            print(new_schedule.step)
         else:
             new_schedule = EmployeeSchedule.objects.create(
                 employee=current_employee,
