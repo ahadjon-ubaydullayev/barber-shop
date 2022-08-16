@@ -16,7 +16,7 @@ class BotUser(models.Model):
 
 
 class Employee(models.Model):
-	user_id = models.IntegerField(unique=True)
+	user_id = models.IntegerField()
 	step = models.IntegerField(default=0)
 	full_name = models.CharField(max_length=256, blank=True, null=True)
 	tel_number = models.CharField(max_length=512, blank=True, null=True)
@@ -51,17 +51,6 @@ class Customer(models.Model):
 	def __str__(self):
 		return self.bot_user.first_name
 
-
-# class WorkSchedule(models.Model):
-# 	employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-# 	start = models.CharField(max_length=12)
-# 	end = models.CharField(max_length=12)
-# 	status = models.BooleanField(default=False)
-# 	date = models.DateField(auto_now_add=True)
-# 	step = models.IntegerField(default=0)
-
-# 	def __str__(self):
-# 		return self.start
 
 
 class EmployeeSchedule(models.Model):

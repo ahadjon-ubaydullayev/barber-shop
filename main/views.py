@@ -74,7 +74,6 @@ def register_view(message):
     main_markup_admin_ru = button_gen("Добавить нового сотрудника👨‍💼", "Подать объявление🗣", "Удалить сотрудника🙅‍♂️", "Статистика📈")
     main_markup_employee_ru = button_gen("Ежедневные клиенты👨🏻‍⚖️", "Время работы⏰", "Рейтинг📈")
     new_employee = Employee.objects.filter(is_created=True).first()
-    print('new_employee', new_employee)
     if message.text == "🇺🇿O'zbek tili🇺🇿":
         admin.language = 'uz'
         admin.save()
@@ -229,7 +228,6 @@ def register_view(message):
                 step=1,
                 status=True)
             new_schedule.save()
-
     
     elif admin.permission == "employee" and new_schedule.step == 1:
         if str(message.text).isdigit():
@@ -280,19 +278,19 @@ def register_view(message):
 
     elif admin.permission == "admin" and message.text == "Bekor qilish❌":
         new_employee.delete()
-        print("working")
-        bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
 
+        bot.send_message(message.from_user.id, "Bekor qilindi!", reply_markup=main_markup_admin)
 
     elif admin.permission == "admin" and message.text == "Xodimni o'chirish🙅‍♂️":
         xodimlar_markup = types.InlineKeyboardMarkup(row_width=2)
-        for i in employee:
-            xodimlar_markup.add(types.InlineKeyboardButton(f"{i.full_name}", callback_data=f"{i.user_id} delete"))
-        bot.send_message(message.from_user.id, "O'chirilishi kerak bo'lgan xodimni tanlang:",
-                         reply_markup=xodimlar_markup)
-    # if admin.permission == "admin":
-    #     print("admin", admin)
-    
+        if len(employee) > 0:
+            for i in employee:
+                xodimlar_markup.add(types.InlineKeyboardButton(f"{i.full_name}", callback_data=f"{i.tel_number} delete"))
+            bot.send_message(message.from_user.id, "O'chirilishi kerak bo'lgan xodimni tanlang:",
+                             reply_markup=xodimlar_markup)
+        else:
+            bot.send_message(message.from_user.id, "Hozirda xodim mavjud emas🤷🏻‍♂️", reply_markup=main_markup_admin)
+
     elif admin.permission == "admin" and message.text == "Statistika📈":
         if len(Order.objects.all()) > 0:
             orders = Order.objects.all().count()
@@ -301,19 +299,15 @@ def register_view(message):
                              f"Barcha mijozlar soni {users} ta.\nBarcha buyurtmalar soni {orders} ta.")
         else:
             bot.send_message(message.from_user.id, "Hozirda buyurtmalar mavjud emas!")
-    
+
     elif admin.permission == "admin" and message.text == "Yangi xodim qo'shish👨‍💼":  # adding employee
-        print("working")
         form_markup = button_gen("Bekor qilish❌")
-        print("working1")
         new_emp = Employee.objects.create(
             step=1,
             user_id=123,
-            is_created=True,
+            is_created=True
         )
         new_emp.save()
-        print("working2")
-        print("new new_employee", new_emp)
         bot.send_message(message.from_user.id, "Xodimning ism familiyasini kiriting 🤵:", reply_markup=form_markup)
 
     elif admin.permission == "admin" and new_employee.step == 1:
@@ -406,10 +400,11 @@ def handle_query(call):  # '10:30'
                               text=f"Buyurtmangiz bekor qilindi!")
     elif 'delete' in call.data:
         employee_id = str(call.data).split(' ')[0]
-        employee = Employee.objects.get(user_id=employee_id)
-        bot_user = BotUser.objects.get(user_id=employee_id)
-        bot_user.delete()
+        employee = Employee.objects.get(tel_number=employee_id)
         employee.delete()
+        if len(BotUser.objects.filter(tel_number=employee_id)) > 0:
+            bot_user = BotUser.objects.get(tel_number=employee_id)
+            bot_user.delete()
         bot.edit_message_text(chat_id=call.from_user.id, message_id=call.message.id,
                               text=f"{employee.full_name} bazadan o'chirildi!")
     elif ':30' in call.data or ':00' in call.data:
