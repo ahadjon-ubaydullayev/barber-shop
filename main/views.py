@@ -431,7 +431,7 @@ def handle_query(call):  # '10:30'
             order.save()
             markup = types.InlineKeyboardMarkup(row_width=2)
             btn = types.InlineKeyboardButton('✅ qabul qilish', callback_data=f'accept_{order.id}')
-            btn1 = types.InlineKeyboardButton('❌ rad etish', callback_data='rejected')
+            btn1 = types.InlineKeyboardButton('❌ rad etish', callback_data=f'rejected_{order.id}')
             markup.add(btn, btn1)
             bot.send_message(employee_id, f"Sizga ⌚️{order.order_time} ga mijoz murojaat qildi", reply_markup=markup)
             if bot_user.language == 'uz':
