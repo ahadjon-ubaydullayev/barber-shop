@@ -63,8 +63,8 @@ def register_view(message):
     users = BotUser.objects.all()
     form_main_markup = button_gen("Orqaga⬅️", "Bekor qilish❌")
     admin = BotUser.objects.get(user_id=message.from_user.id)
-    info_markup = button_gen("Narxlar💰", "Stillar💇‍♂️", "Xodimlar ro'yxati🤵‍♂️", "Bosh menu📊")
-    info_markup_ru = button_gen("Цены💰", "Стили💇‍♂️", "Список сотрудников 🤵‍♂️", "Главное меню📊")
+    info_markup = button_gen("Stillar💇‍♂️", "Xodimlar ro'yxati🤵‍♂️", "Bosh menu📊")
+    info_markup_ru = button_gen("Стили💇‍♂️", "Список сотрудников 🤵‍♂️", "Главное меню📊")
     employee = Employee.objects.all()
     message_step = MessageStep.objects.all().first()
     main_markup_user = button_gen("Joy buyurtma qilish✏️", "Info📕", "Buyurtmalarim🛎")
@@ -141,9 +141,11 @@ def register_view(message):
 
     elif message.text == "Stillar💇‍♂️" or message.text == "Стили💇‍♂️":
         styles = Styles.objects.all()
+        bot.send_message(message.from_user.id, f"Bizda mavjud still turlari:")
         if admin.language == 'uz':
             for style in styles:
-                bot.send_message(message.from_user.id, f"Stil turi: {style.name}.")
+                bot.send_photo(message.from_user.id, style.image)
+                # bot.send_message(message.from_user.id, f"Stil turi: {style.name}.")
         else:
             for style in styles:
                 bot.send_message(message.from_user.id, f"Тип стиля: {style.name}.")
@@ -217,13 +219,11 @@ def register_view(message):
         bot.send_message(message.from_user.id, "Ish boshlash vaqtingizni kiriting ⏰:\n")
         emp = button_gen("❌ Bekor qilish ❌")
         current_employee = Employee.objects.filter(user_id=message.from_user.id).first()
-        print(current_employee)
         if len(EmployeeSchedule.objects.filter(employee=current_employee)) > 0:
             new_schedule = EmployeeSchedule.objects.filter(employee=current_employee).first()
             new_schedule.status = True
             new_schedule.step = 1
             new_schedule.save()
-            print(new_schedule.step)
         else:
             new_schedule = EmployeeSchedule.objects.create(
                 employee=current_employee,
